@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Dashboard</h1>
+
+    <% if (errors && errors.length > 0) { %>
+        <div class="alert alert-danger">
+            <% errors.forEach(error => { %>
+                <p><%= error %></p>
+            <% }); %>
+        </div>
+    <% } %>
+
+    <% if (messages && messages.length > 0) { %>
+        <div class="alert alert-success">
+            <% messages.forEach(msg => { %>
+                <p><%= msg %></p>
+            <% }); %>
+        </div>
+    <% } %>
+
+    <% if (user) { %>
+        <p>Welcome, <%= user.username %> (<%= user.role %>)</p>
+
+        <% if (user.role === 'admin') { %>
+            <a href="/admin" class="btn btn-warning mb-3">Admin Dashboard</a>
+        <% } %>
+
+        <a href="/logout" class="btn btn-danger mb-3 ml-2">Logout</a>
+
+        <!-- CREATE PLAYLIST FORM -->
+        <h3>Create a Playlist</h3>
+        <form action="/playlists" method="POST">
+            <div class="form-group">
+                <label for="playlistName">Playlist Name:</label>
+                <input type="text" id="playlistName" name="name" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Playlist</button>
+        </form>
+
+        <hr>
+
+        <!-- ADD SONG FORM -->
+        <h3>Add a Song to Playlist</h3>
+        <form action="/songs" method="POST">
+            <div class="form-group">
+                <label for="playlistSelect">Select Playlist:</label>
+                <select id="playlistSelect" name="playlist_id" class="form-control" required>
+                    <% playlists.forEach(playlist => { %>
+                        <option value="<%= playlist.id %>"><%= playlist.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="songName">Song Name:</label>
+                <input type="text" id="songName" name="song_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="artistName">Artist Name:</label>
+                <input type="text" id="artistName" name="artist_name" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Song</button>
+        </form>
+
+        <hr>
+
+        <!-- OPTIONAL: Display existing playlists and their songs -->
+        <h3>Your Playlists</h3>
+        <% if (playlists.length === 0) { %>
+            <p>You have no playlists yet.</p>
+        <% } else { %>
+            <% playlists.forEach(playlist => { %>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5><%= playlist.name %></h5>
+                        <% if (playlist.image_path) { %>
+                            <img src="<%= playlist.image_path %>" alt="Playlist Image" style="max-width: 200px;">
+                        <% } %>
+                        <ul>
+                            <% playlist.songs.forEach(song => { %>
+                                <li><strong><%= song.song_name %></strong> by <%= song.artist_name %></li>
+                            <% }) %>
+                        </ul>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+
+    <% } %>
+
+</div>
+</body>
+</html>
